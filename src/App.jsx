@@ -1,35 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { Component } from "react";
+import "./App.css";
+import FileUpload from "./FileUpload";
+import InteractiveStreamGraph from "./InteractiveStreamGraph";
 
-function App() {
-  const [count, setCount] = useState(0)
+/**
+ * This is the main application component that manages the overall state and structure
+ * of the streamgraph visualization application. It coordinates data flow between
+ * the file upload component and the visualization component.
+ */
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      csvData: []     // Initialize state with an empty data array. This will hold the parsed CSV data after file upload
+    };
+  }
 
-  return (
-    <>
+  setUploadedData = (parsedCsvData) => { // Callback function to update the application state with uploaded CSV data. This function is passed down to the FileUpload component as a prop
+    this.setState({ csvData: parsedCsvData });
+  }
+
+  render() {
+    return (
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        {/* FileUpload component handles CSV file selection and parsing */}
+        <FileUpload setUploadedData={this.setUploadedData} />
+        
+        {/* Parent container for the visualization */}
+        <div className="parent">
+          {/* InteractiveStreamGraph renders the D3 streamgraph visualization. It receives the parsed CSV data as a prop and updates when data changes */}
+          <InteractiveStreamGraph csvData={this.state.csvData} />
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    );
+  }
 }
 
-export default App
+export default App;
